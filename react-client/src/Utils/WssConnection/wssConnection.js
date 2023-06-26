@@ -49,3 +49,7 @@ export const registerNewUser = (username)=>{
 export const sendPreOffer = (data)=>{
     socket.emit('pre-offer', data);
 };
+
+export const sendPreOfferAnswer = (data)=>{
+    socket.emit('pre-offer-answer', data);
+}
