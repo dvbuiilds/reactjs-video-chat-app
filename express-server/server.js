@@ -51,6 +51,27 @@ io.on('connection', (socket)=>{
             callerSocketId: socket.id
         })
     });
+
+    socket.on('pre-offer-answer', (data)=>{
+    console.log('handling pre offer answer');
+        io.to(data.callerSocketId).emit('pre-offer-answer', {
+            answer: data.answer,
+        });
+    });
+
+    socket.on('webRTC-offer', (data)=>{
+        console.log('handling web rtc offer');
+        io.to(data.calleeSocketId).emit('webRTC-offer', {
+            offer: data.offer
+        });
+    });
+
+    socket.on('webRTC-answer', (data)=>{
+        console.timeLog('handling webrtc answer');
+        io.to(data.callerSocketId).emit('webRTC-answer', {
+            answer: data.answer
+        });
+    });
 });
 
 app.use(express.static('public'));

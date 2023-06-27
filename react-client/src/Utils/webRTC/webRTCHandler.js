@@ -1,6 +1,6 @@
-import { callStates, setCallState, setCallerUsername, setCallingDialogVisible, setLocalStream } from "../../redux/Call/actions";
+import { callStates, setCallRejected, setCallState, setCallerUsername, setCallingDialogVisible, setLocalStream } from "../../redux/Call/actions";
 import store from "../../redux/store";
-import { sendPreOffer, sendPreOfferAnswer } from "../WssConnection/wssConnection";
+import { sendPreOffer, sendPreOfferAnswer, sendWebRTCAnswer, sendWebRTCOffer } from "../WssConnection/wssConnection";
 
 const defaultConstraints = {
     video: true,
@@ -12,13 +12,37 @@ export const getLocalStream = ()=>{
     .then(stream => {
         store.dispatch(setLocalStream(stream));
         store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+        createPeerConnection();
     })
     .catch(err => {
         console.log(err.message);
     });
 };
 
-let connectedUserSocketId = null;
+let connectedUserSocketId = null, peerConnection = null;
+const configuration = {
+    iceServers: [{
+        urls: 'stun:stun.l.google.com:13902'
+    }]
+};
+
+export const createPeerConnection = ()=>{
+    peerConnection = new RTCPeerConnection(configuration);
+    const localStream = store.getState().call.localStream;
+
+    for(let track of localStream.getTrack()){
+        peerConnection.addTrack(track, localStream);
+    }
+
+    peerConnection.ontrack = ({ streams: [stream] })=>{
+        // dispatch remote stream in our store.
+    }
+
+    peerConnection.onicecandidate = event=> {
+        // send to connected user our ice candidate.
+    }
+}
+
 export const callToOtherUser = (calleeDetails)=> {
     connectedUserSocketId = calleeDetails.socketId;
     store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
@@ -42,6 +66,48 @@ export const handlePreOffer = (data)=>{
             answer: preOfferAnswers.CALL_NOT_AVAILABLE
         });
     }
+};
+
+export const handlePreOfferAnswer = data=>{
+    store.dispatch(setCallingDialogVisible(false));
+    if(data.answer === preOfferAnswers.CALL_ACCEPTED){
+        // send WebRTC offer to other User.
+    } else{
+        let rejectReason;
+        if(data.answer === preOfferAnswers.CALL_NOT_AVAILABLE){
+            rejectReason = 'Callee is not available right now.';
+        } else{
+            rejectReason = 'Call is rejected by the callee';
+        }
+        store.dispatch(setCallRejected({
+            rejected: true,
+            reason: rejectReason
+        }));
+        resetCallData();
+    }
+};
+
+export const handleOffer = async (data)=>{
+    await peerConnection.setRemoteDescription(data.offer);
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    sendWebRTCAnswer({
+        callerSocketId: connectedUserSocketId,
+        answer
+    });
+};
+
+export const handleAnswer = async(data)=>{
+    await peerConnection.setRemoteDescription(data.answer);
+}
+
+export const sendOffer = async ()=>{
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    sendWebRTCOffer({
+        calleeSocketId: connectedUserSocketId,
+        offer,
+    });
 };
 
 export const preOfferAnswers = {

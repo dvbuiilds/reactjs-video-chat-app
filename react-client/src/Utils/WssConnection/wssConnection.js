@@ -1,7 +1,7 @@
 import socketClient from 'socket.io-client';
 import store from '../../redux/store';
 import { setActiveUsers } from '../../redux/Dashboard/actions';
-import { handlePreOffer } from '../webRTC/webRTCHandler';
+import { handleAnswer, handleOffer, handlePreOffer, handlePreOfferAnswer } from '../webRTC/webRTCHandler';
 
 
 const URL = 'http://localhost:5000';
@@ -25,6 +25,18 @@ export const connectWithWebSocketServer = ()=>{
 
     socket.on('pre-offer', (data)=>{
         handlePreOffer(data);
+    });
+
+    socket.on('pre-offer-answer', data=>{
+        handlePreOfferAnswer(data);
+    });
+
+    socket.on('webRTC-offer', (data)=>{
+        handleOffer(data);
+    });
+
+    socket.on('webRTC-answer', (data)=>{
+        handleAnswer(data);
     });
 };
 
@@ -52,4 +64,12 @@ export const sendPreOffer = (data)=>{
 
 export const sendPreOfferAnswer = (data)=>{
     socket.emit('pre-offer-answer', data);
+};
+
+export const sendWebRTCOffer = (data) => {
+    socket.emit('webRTC-offer', data);
+};
+
+export const sendWebRTCAnswer = (data)=> {
+    socket.emit('webRTC-answer', data);
 }
