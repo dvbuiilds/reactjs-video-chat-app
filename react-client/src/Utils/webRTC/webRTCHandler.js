@@ -58,11 +58,11 @@ export const acceptIncomingCallRequest = ()=>{
 };
 
 export const rejectIncomingCallRequest = () => {
-    resetCallData();
     sendPreOfferAnswer({
         callerSocketId: connectedUserSocketId,
         answer: preOfferAnswers.CALL_REJECTED
     });
+    resetCallData();
 };
 
 export const checkIfCallIsPossible = () => {

@@ -11,17 +11,6 @@ const broadcastEventTypes = {
     GROUP_CALL_ROOMS : 'GROUP_CALL_ROOMS'
 };
 
-const handleBroadcastEvents = (data)=>{
-    switch(data.event) {
-        case broadcastEventTypes.ACTIVE_USERS:
-            const activeUsers = data.activeUsers.filter(activeUser=> activeUser.socketId !== socket.id);
-            store.dispatch(setActiveUsers(activeUsers));
-            break;
-        default:
-            break;
-    };
-};
-
 export const connectWithWebSocketServer = ()=>{
     socket = socketClient(URL);
 
@@ -37,6 +26,17 @@ export const connectWithWebSocketServer = ()=>{
     socket.on('pre-offer', (data)=>{
         handlePreOffer(data);
     });
+};
+
+const handleBroadcastEvents = (data)=>{
+    switch(data.event) {
+        case broadcastEventTypes.ACTIVE_USERS:
+            const activeUsers = data.activeUsers.filter(activeUser=> activeUser.socketId !== socket.id);
+            store.dispatch(setActiveUsers(activeUsers));
+            break;
+        default:
+            break;
+    };
 };
 
 export const registerNewUser = (username)=>{
