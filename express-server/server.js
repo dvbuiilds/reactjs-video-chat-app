@@ -67,9 +67,16 @@ io.on('connection', (socket)=>{
     });
 
     socket.on('webRTC-answer', (data)=>{
-        console.timeLog('handling webrtc answer');
+        console.log('handling webrtc answer');
         io.to(data.callerSocketId).emit('webRTC-answer', {
             answer: data.answer
+        });
+    });
+
+    socket.on('webRTC-candidate', (data)=>{
+        console.log('handling ice candidate');
+        io.to(data.connectedUserSocketId).emit('webRTC-candidate', {
+            candidate: data.candidate
         });
     });
 });

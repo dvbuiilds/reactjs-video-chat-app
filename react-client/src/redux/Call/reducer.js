@@ -1,8 +1,9 @@
-import { CALL_SET_CALLER_USERNAME, CALL_SET_CALLING_DIALOG_VISIBLE, CALL_SET_CALL_REJECTED, CALL_SET_CALL_STATE, CALL_SET_LOCAL_STREAM, callStates } from "./actions";
+import { CALL_SET_CALLER_USERNAME, CALL_SET_CALLING_DIALOG_VISIBLE, CALL_SET_CALL_REJECTED, CALL_SET_CALL_STATE, CALL_SET_LOCAL_STREAM, CALL_SET_REMOTE_STREAM, callStates } from "./actions";
 
 
 const initialState = {
     localStream: null,
+    remoteStream: null,
     callState: callStates.CALL_UNAVAILABLE,
     callingDialogVisible: false,
     callerUsername: '',
@@ -19,6 +20,13 @@ const callReducer = (state=initialState, action)=>{
                 ...state,
                 localStream: action.localStream
             };
+
+
+        case CALL_SET_REMOTE_STREAM:
+            return {
+                ...state,
+                remoteStream: action.remoteStream
+            }
             
         case CALL_SET_CALL_STATE:
             return {

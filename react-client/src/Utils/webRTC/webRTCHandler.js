@@ -1,6 +1,6 @@
-import { callStates, setCallRejected, setCallState, setCallerUsername, setCallingDialogVisible, setLocalStream } from "../../redux/Call/actions";
+import { callStates, setCallRejected, setCallState, setCallerUsername, setCallingDialogVisible, setLocalStream, setRemoteStream } from "../../redux/Call/actions";
 import store from "../../redux/store";
-import { sendPreOffer, sendPreOfferAnswer, sendWebRTCAnswer, sendWebRTCOffer } from "../WssConnection/wssConnection";
+import { sendPreOffer, sendPreOfferAnswer, sendWebRTCAnswer, sendWebRTCCandidate, sendWebRTCOffer } from "../WssConnection/wssConnection";
 
 const defaultConstraints = {
     video: true,
@@ -30,17 +30,32 @@ export const createPeerConnection = ()=>{
     peerConnection = new RTCPeerConnection(configuration);
     const localStream = store.getState().call.localStream;
 
-    for(let track of localStream.getTrack()){
+    for(let track of localStream.getTracks()){
         peerConnection.addTrack(track, localStream);
     }
 
     peerConnection.ontrack = ({ streams: [stream] })=>{
         // dispatch remote stream in our store.
-    }
+        store.dispatch(setRemoteStream(stream));
+    };
 
-    peerConnection.onicecandidate = event=> {
-        // send to connected user our ice candidate.
-    }
+    peerConnection.onicecandidate = (event)=> {
+        console.log('getting candidates from stun server', {event});
+        // send our ice candidate to connected user.
+        if(event.candidate){
+            sendWebRTCCandidate({
+                candidate: event.candidate,
+                connectedUserSocketId: connectedUserSocketId
+            });
+            console.log('Sending web rtc candidate');
+        }
+    };
+
+    peerConnection.onconnectionstatechange = (event)=>{
+        if(peerConnection.connectionState === 'connected'){
+            console.log('successfully connected with other peer.    ');
+        }
+    };
 }
 
 export const callToOtherUser = (calleeDetails)=> {
@@ -72,6 +87,7 @@ export const handlePreOfferAnswer = data=>{
     store.dispatch(setCallingDialogVisible(false));
     if(data.answer === preOfferAnswers.CALL_ACCEPTED){
         // send WebRTC offer to other User.
+        sendOffer();
     } else{
         let rejectReason;
         if(data.answer === preOfferAnswers.CALL_NOT_AVAILABLE){
@@ -99,7 +115,19 @@ export const handleOffer = async (data)=>{
 
 export const handleAnswer = async(data)=>{
     await peerConnection.setRemoteDescription(data.answer);
-}
+};
+
+export const handleCandidate = async(data)=>{
+    try{
+        await peerConnection.addIceCandidate(data.candidate)
+        .then(()=> console.log('adding ice candidate', data))
+        .catch((err)=> console.log(err.message));
+        
+    } catch(error){
+        console.error('Error: trying to add recieved ice candidate');
+        console.log(error.message);
+    }
+};
 
 export const sendOffer = async ()=>{
     const offer = await peerConnection.createOffer();
@@ -121,6 +149,8 @@ export const acceptIncomingCallRequest = ()=>{
         callerSocketId: connectedUserSocketId,
         answer: preOfferAnswers.CALL_ACCEPTED
     });
+    
+    store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
 };
 
 export const rejectIncomingCallRequest = () => {

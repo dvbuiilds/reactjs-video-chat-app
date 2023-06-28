@@ -3,9 +3,11 @@ import { acceptIncomingCallRequest, rejectIncomingCallRequest } from '../Utils/w
 
 const IncomingCallDialog = ({ callerUsername }) => {
     const handleAcceptButton = ()=>{ 
+        // console.log('Handling accept');
         acceptIncomingCallRequest();
     }
     const handleRejectButton = ()=>{ 
+        // console.log('Handling reject');
         rejectIncomingCallRequest();
     }
     const style = {
