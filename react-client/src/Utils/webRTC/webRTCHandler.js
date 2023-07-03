@@ -1,6 +1,6 @@
-import { callStates, setCallRejected, setCallState, setCallerUsername, setCallingDialogVisible, setLocalStream, setRemoteStream } from "../../redux/Call/actions";
+import { callStates, resetCallDataState, setCallRejected, setCallState, setCallerUsername, setCallingDialogVisible, setLocalStream, setRemoteStream, setScreenSharingActive } from "../../redux/Call/actions";
 import store from "../../redux/store";
-import { sendPreOffer, sendPreOfferAnswer, sendWebRTCAnswer, sendWebRTCCandidate, sendWebRTCOffer } from "../WssConnection/wssConnection";
+import { sendPreOffer, sendPreOfferAnswer, sendUserHangedUp, sendWebRTCAnswer, sendWebRTCCandidate, sendWebRTCOffer } from "../WssConnection/wssConnection";
 
 const defaultConstraints = {
     video: true,
@@ -162,14 +162,63 @@ export const rejectIncomingCallRequest = () => {
 };
 
 export const checkIfCallIsPossible = () => {
-    if(
-        store.getState().call.localStream === null || 
-        store.getState().call.callState !== callStates.CALL_AVAILABLE
-    ){
+    if(store.getState().call.localStream === null || 
+    store.getState().call.callState !== callStates.CALL_AVAILABLE ){
         return false;
     } else{
         return true;
     }
+};
+
+let screenSharingStream = null;
+
+export const switchForScreenSharingStream = async()=>{
+    if(!store.getState().call.screenSharingActive){
+        try{
+            screenSharingStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            const senders = peerConnection.getSenders();
+            const sender = senders.find( sender=> sender.track.kind === screenSharingStream.getVideoTracks()[0].kind);
+            sender.replaceTrack(screenSharingStream.getVideoTracks()[0]);
+            store.dispatch(setScreenSharingActive(true));
+    
+        } catch(error){
+            console.log({error});
+        }
+    } else{
+        const localStream = store.getState().call.localStream;
+        const senders = peerConnection.getSenders();
+        const sender = senders.find( sender=> sender.track.kind === localStream.getVideoTracks()[0].kind);
+        sender.replaceTrack(localStream.getVideoTracks()[0]);
+        store.dispatch(setScreenSharingActive(false));
+        screenSharingStream.getTracks().forEach(track => track.stop());
+    }
+};
+
+export const handleUserHangedUp = ()=>{
+    resetCallDataAfterHangUp();
+};
+
+export const hangUp = ()=>{
+    sendUserHangedUp({
+        connectedUserSocketId,
+    });
+
+    resetCallDataAfterHangUp();
+};
+
+const resetCallDataAfterHangUp = ()=>{
+    if(store.getState().call.screenSharingActive){
+        screenSharingStream.getTracks().forEach(track => track.stop());
+    }
+    store.dispatch(resetCallDataState());
+    peerConnection.close();
+    peerConnection = null;
+    createPeerConnection();
+    resetCallData(); 
+
+    const localStream = store.getState().call.localStream;
+    localStream.getVideoTracks()[0].enabled = true;
+    localStream.getAudioTracks()[0].enabled = true;
 };
 
 export const resetCallData = ()=> {

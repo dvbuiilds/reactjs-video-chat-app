@@ -11,6 +11,10 @@ export const CALL_SET_CALL_STATE = 'CALL_SET_CALL_STATE';
 export const CALL_SET_CALLING_DIALOG_VISIBLE = 'CALL_SET_CALLING_DIALOG_VISIBLE';
 export const CALL_SET_CALLER_USERNAME = 'CALL_SET_CALLER_USERNAME';
 export const CALL_SET_CALL_REJECTED = 'CALL_SET_CALL_REJECTED';
+export const CALL_SET_LOCAL_MICROPHONE_ENABLED = 'CALL_SET_LOCAL_MICROPHONE_ENABLED';
+export const CALL_SET_LOCAL_CAMERA_ENABLED = 'CALL_SET_LOCAL_CAMERA_ENABLED';
+export const CALL_SET_SCREEN_SHARING_ACTIVE = 'CALL_SET_SCREEN_SHARING_ACTIVE';
+export const CALL_RESET_CALL_DATA = 'CALL_RESET_CALL_DATA';
 
 export const setLocalStream = (localStream)=>{
     return {
@@ -54,5 +58,32 @@ export const setCallRejected = (callRejectedDetails) =>{
             rejected: callRejectedDetails.rejected,
             reason: callRejectedDetails.reason
         }
+    };
+};
+
+export const setLocalMicrophoneEnabled = (enabled)=>{
+    return {
+        type: CALL_SET_LOCAL_MICROPHONE_ENABLED,
+        enabled
+    };
+};
+
+export const setLocalCameraEnabled = (enabled)=>{
+    return {
+        type: CALL_SET_LOCAL_CAMERA_ENABLED,
+        enabled
+    };
+};
+
+export const setScreenSharingActive = (active)=>{
+    return {
+        type: CALL_SET_SCREEN_SHARING_ACTIVE,
+        active
+    };
+};
+
+export const resetCallDataState = ()=>{
+    return {
+        type: CALL_RESET_CALL_DATA
     };
 };

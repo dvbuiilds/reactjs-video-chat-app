@@ -79,6 +79,11 @@ io.on('connection', (socket)=>{
             candidate: data.candidate
         });
     });
+
+    socket.on('user-hanged-up', (data)=>{
+        console.log('handling user hanged up');
+        io.to(data.connectedUserSocketId).emit('user-hanged-up');
+    });
 });
 
 app.use(express.static('public'));

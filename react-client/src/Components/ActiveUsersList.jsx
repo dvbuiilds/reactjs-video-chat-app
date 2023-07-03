@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 
 
 const ActiveUsersList = (props) => {
-    const activeUsers = props.activeUsers;
+    const { activeUsers, callState } = props;
     return (
         <>
             <ul className="list-group">
                 {
                     activeUsers.map(activeUser=> (
-                        <li className="list-group-item" key={activeUser.socketId}><ActiveUsersListItem key={activeUser.socketId} activeUser={activeUser} /></li>
+                        <li className="list-group-item" key={activeUser.socketId}><ActiveUsersListItem key={activeUser.socketId} activeUser={activeUser} callState={callState} /></li>
                     ))
                 }
                 {/* <li class="list-group-item"><ActiveUsersListItem/></li>
@@ -24,7 +24,8 @@ const ActiveUsersList = (props) => {
 
 const mapStateToProps = (state)=>{
     return {
-        activeUsers: state.dashboard.activeUsers
+        activeUsers: state.dashboard.activeUsers,
+        callState: state.call.callState,
     };
 };
 

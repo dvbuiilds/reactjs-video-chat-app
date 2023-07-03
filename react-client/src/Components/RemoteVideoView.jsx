@@ -15,9 +15,7 @@ const RemoteVideoView = (props) => {
     }, [remoteStream]);
     return (
         <>
-            <div>
-                <video ref={remoteVideoRef} autoPlay muted ></video>
-            </div>
+            <video ref={remoteVideoRef} autoPlay muted ></video>
         </>
     );
 };

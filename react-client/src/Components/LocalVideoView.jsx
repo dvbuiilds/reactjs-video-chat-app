@@ -15,9 +15,7 @@ const LocalVideoView = (props) => {
     }, [localStream]);
     return (
         <>
-            <div style={{}}>
-                <video style={style} ref={localVideoRef} autoPlay muted ></video>
-            </div>
+            <video style={style} ref={localVideoRef} autoPlay muted ></video>
         </>
     );
 };

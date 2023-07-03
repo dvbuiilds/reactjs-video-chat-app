@@ -1,10 +1,13 @@
 import React from 'react'
 import { callToOtherUser } from '../Utils/webRTC/webRTCHandler';
+import { callStates } from '../redux/Call/actions';
 
 const ActiveUsersListItem = (props) => {
-    const { activeUser } = props;
+    const { activeUser, callState } = props;
     const handleListItemClick = ()=>{ 
-        callToOtherUser(activeUser);
+        if(callState === callStates.CALL_AVAILABLE){
+            callToOtherUser(activeUser);
+        }
     };
 
     return (
