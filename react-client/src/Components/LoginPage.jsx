@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { setUserName } from '../redux/Dashboard/actions';
 import { connect } from 'react-redux';
@@ -6,7 +6,6 @@ import { registerNewUser } from '../Utils/WssConnection/wssConnection';
 
 const LoginPage = (props) => {
     const [username, setUsername] = useState('');
-    // const [username, setUsername] = useState('');
     const navigate = useNavigate();
     const handleSubmitFn = (e)=>{
         e.preventDefault();
@@ -14,24 +13,6 @@ const LoginPage = (props) => {
         registerNewUser(username);
         navigate('/dashboard');
     };
-
-    // const videoRef = useRef();
-    // useEffect(()=>{
-    //     navigator.mediaDevices.getUserMedia({
-    //         audio: true,
-    //         video: true
-    //     })
-    //     .then(stream => {
-    //         const VIDEO = document.getElementById('myVideo');
-    //         VIDEO.srcObject = stream;
-    //         VIDEO.onloadmetadata = ()=>{
-    //             VIDEO.play();
-    //         }
-    //     })
-    //     .catch(err => {
-    //         console.log(err.message);
-    //     });
-    // }, [videoRef]);
 
     return (
         <>

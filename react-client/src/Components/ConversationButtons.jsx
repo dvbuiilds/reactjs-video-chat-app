@@ -1,5 +1,5 @@
 import React from 'react'
-import { MdCallEnd, MdMic, MdMicOff, MdVideocam, MdVideocamOff, MdVideoLabel, MdVideoCall, MdCamera, } from 'react-icons/md';
+import { MdCallEnd, MdMic, MdMicOff, MdVideocam, MdVideocamOff, MdVideoLabel, MdCamera, } from 'react-icons/md';
 import ConversationButton from './ConversationButton';
 import { hangUp, switchForScreenSharingStream } from '../Utils/webRTC/webRTCHandler';
 

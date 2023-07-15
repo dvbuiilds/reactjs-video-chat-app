@@ -19,18 +19,22 @@ const DirectCall = (props) => {
         callingDialogVisible, 
         callRejected, 
         hideCallRejectedDialog,
-        // localCameraEnabled,
-        // localMicrophoneEnabled,
     } = props;
     return (
         <>
-            <LocalVideoView localStream={localStream}/>
-            { remoteStream && callState === callStates.CALL_IN_PROGRESS && <RemoteVideoView remoteStream={remoteStream} />}
-            { callRejected.rejected && <CallRejectedDialog reason={callRejected.reason} hideCallRejectedDialog={hideCallRejectedDialog} /> }
-            { callState === callStates.CALL_REQUESTED && <IncomingCallDialog callerUsername={callerUsername} /> }
-            { callingDialogVisible && <CallingDialog/> }
-            { callState !== callStates.CALL_IN_PROGRESS && <DashboardInfo username={username} />}
-            <ConversationButtons {...props} />
+            <div className="row">
+                { callState !== callStates.CALL_IN_PROGRESS && <DashboardInfo username={username} />}
+                { callRejected.rejected && <CallRejectedDialog reason={callRejected.reason} hideCallRejectedDialog={hideCallRejectedDialog} /> }
+                { callState === callStates.CALL_REQUESTED && <IncomingCallDialog callerUsername={callerUsername} /> }
+                { callingDialogVisible && <CallingDialog/> }
+            </div>
+            <div className="col-md-2">
+                <LocalVideoView localStream={localStream}/>
+            </div>
+            <div className="col-md-6">
+                { remoteStream && callState === callStates.CALL_IN_PROGRESS && <RemoteVideoView remoteStream={remoteStream} />}
+            </div>
+            <div className="row"><ConversationButtons {...props} /></div>
         </>
     );
 };

@@ -21,7 +21,6 @@ const LocalVideoView = (props) => {
 };
 
 const style = {
-    float: 'right',
     height: "200px",
     width: "300px",
     borderRadius: '15px'

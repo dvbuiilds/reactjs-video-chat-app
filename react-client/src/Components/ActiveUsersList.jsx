@@ -13,10 +13,6 @@ const ActiveUsersList = (props) => {
                         <li className="list-group-item" key={activeUser.socketId}><ActiveUsersListItem key={activeUser.socketId} activeUser={activeUser} callState={callState} /></li>
                     ))
                 }
-                {/* <li class="list-group-item"><ActiveUsersListItem/></li>
-                <li class="list-group-item"><ActiveUsersListItem/></li>
-                <li class="list-group-item"><ActiveUsersListItem/></li>
-                <li class="list-group-item"><ActiveUsersListItem/></li> */}
             </ul>
         </>
     );
