@@ -2,13 +2,15 @@ import React, { useEffect } from 'react'
 import ActiveUsersList from './ActiveUsersList'
 import { getLocalStream } from '../Utils/webRTC/webRTCHandler'
 import DirectCall from './DirectCall';
-import DashboardInfo from './DashboardInfo';
+import DashboardInfo from './DashboardInfo.jsx';
 import { connect } from 'react-redux';
 import { callStates } from '../redux/Call/actions';
+import { connectWithMyPeer } from '../Utils/webRTC/webRTCGroupCallHandler';
 
 const Dashboard = ({ username, callState }) => {
     useEffect(()=>{
         getLocalStream();
+        connectWithMyPeer();
     });
     
     return (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { setUserName } from '../redux/Dashboard/actions';
 import { connect } from 'react-redux';
@@ -15,6 +15,24 @@ const LoginPage = (props) => {
         navigate('/dashboard');
     };
 
+    // const videoRef = useRef();
+    // useEffect(()=>{
+    //     navigator.mediaDevices.getUserMedia({
+    //         audio: true,
+    //         video: true
+    //     })
+    //     .then(stream => {
+    //         const VIDEO = document.getElementById('myVideo');
+    //         VIDEO.srcObject = stream;
+    //         VIDEO.onloadmetadata = ()=>{
+    //             VIDEO.play();
+    //         }
+    //     })
+    //     .catch(err => {
+    //         console.log(err.message);
+    //     });
+    // }, [videoRef]);
+
     return (
         <>
             <div className='container row my-5'>
@@ -29,10 +47,6 @@ const LoginPage = (props) => {
                                 <label htmlFor="userName" className="form-label">User Name</label>
                                 <input type="text" value={username} onChange={(e)=>setUsername(e.target.value)} className="form-control" id="userName" />
                             </div>
-                            {/* <div className="mb-3">
-                                <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
-                                <input type="password" className="form-control" id="exampleInputPassword1"/>
-                            </div> */}
                             <button type="submit" className="btn btn-primary">Submit</button>
                         </form>
                     </div>
