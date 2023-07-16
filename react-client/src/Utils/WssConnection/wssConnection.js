@@ -1,6 +1,6 @@
 import socketClient from 'socket.io-client';
 import store from '../../redux/store';
-import { setActiveUsers, setGroupCalls } from '../../redux/Dashboard/actions';
+import { setActiveUsers } from '../../redux/Dashboard/actions';
 import { handleAnswer, handleCandidate, handleOffer, handlePreOffer, handlePreOfferAnswer, handleUserHangedUp } from '../webRTC/webRTCHandler';
 
 
@@ -48,24 +48,11 @@ export const connectWithWebSocketServer = ()=>{
     });
 };
 
-// Emitting events related with group calls.
-
-export const registerNewGroupCall = (data)=>{
-    socket.emit('group-call-register', data);
-
-};
-
-// Emitting events related with socket.
-
 const handleBroadcastEvents = (data)=>{
     switch(data.event) {
         case broadcastEventTypes.ACTIVE_USERS:
             const activeUsers = data.activeUsers.filter(activeUser=> activeUser.socketId !== socket.id);
             store.dispatch(setActiveUsers(activeUsers));
-            break;
-        case broadcastEventTypes.GROUP_CALL_ROOMS:
-            // const activeUsers = data.activeUsers.filter(activeUser=> activeUser.socketId !== socket.id);
-            store.dispatch(setGroupCalls(data.groupCallRooms));
             break;
         default:
             break;

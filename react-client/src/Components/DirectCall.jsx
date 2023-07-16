@@ -28,10 +28,10 @@ const DirectCall = (props) => {
                 { callState === callStates.CALL_REQUESTED && <IncomingCallDialog callerUsername={callerUsername} /> }
                 { callingDialogVisible && <CallingDialog/> }
             </div>
-            <div className="col-md-5">
+            <div className="col-md-2">
                 <LocalVideoView localStream={localStream}/>
             </div>
-            <div className="col-md-7">
+            <div className="col-md-6">
                 { remoteStream && callState === callStates.CALL_IN_PROGRESS && <RemoteVideoView remoteStream={remoteStream} />}
             </div>
             <div className="row"><ConversationButtons {...props} /></div>
