@@ -3,6 +3,7 @@ const http = require('http');
 const { ExpressPeerServer } = require('peer');
 const PORT = process.env.PORT || 5000;
 const { createPeerServerListeners } = require('./groupCallHandler');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +20,8 @@ const io = require('socket.io')(server, {
 });
 
 let peers = [];
+let groupCallRooms = [];
+
 const broadcastEventTypes = {
     ACTIVE_USERS : 'ACTIVE_USERS',
     GROUP_CALL_ROOMS : 'GROUP_CALL_ROOMS'
@@ -39,6 +42,11 @@ io.on('connection', (socket)=>{
             event: broadcastEventTypes.ACTIVE_USERS,
             activeUsers: peers
         });
+
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.GROUP_CALL_ROOMS,
+            groupCallRooms
+        }); 
     });
 
     socket.on('disconnect', ()=>{
@@ -89,6 +97,27 @@ io.on('connection', (socket)=>{
     socket.on('user-hanged-up', (data)=>{
         console.log('handling user hanged up');
         io.to(data.connectedUserSocketId).emit('user-hanged-up');
+    });
+
+    // listeners related with group call.
+    socket.on('group-call-register', (data)=>{
+        const roomId = uuidv4();
+        socket.join(roomId);
+
+        const newGroupCallRoom = {
+            peerId: data.peerId,
+            hostName: data.username,
+            socketId: socket.id,
+            roomId: roomId
+        };
+
+        groupCallRooms.push(newGroupCallRoom);
+        console.log(groupCallRooms);
+
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.GROUP_CALL_ROOMS,
+            groupCallRooms
+        });
     });
 });
 
