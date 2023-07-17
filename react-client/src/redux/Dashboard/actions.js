@@ -1,5 +1,6 @@
 export const SET_USERNAME = 'SET_USERNAME';
 export const SET_ACTIVE_USERS = 'SET_ACTIVE_USERS';
+export const SET_GROUP_CALL_ROOMS = 'SET_GROUP_CALL_ROOMS'; 
 
 export const setUserName = (username)=>{
     return {
@@ -14,3 +15,10 @@ export const setActiveUsers = (activeUsers) =>{
         activeUsers
     };
 };
+
+export const setGroupCalls = (groupCallRooms)=>{
+    return{
+        type: SET_GROUP_CALL_ROOMS,
+        groupCallRooms
+    };
+}; 
