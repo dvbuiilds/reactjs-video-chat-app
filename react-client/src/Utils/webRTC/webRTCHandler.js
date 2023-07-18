@@ -3,7 +3,10 @@ import store from "../../redux/store";
 import { sendPreOffer, sendPreOfferAnswer, sendUserHangedUp, sendWebRTCAnswer, sendWebRTCCandidate, sendWebRTCOffer } from "../WssConnection/wssConnection";
 
 const defaultConstraints = {
-    video: true,
+    video: {
+        width: 480,
+        height: 360
+    },
     audio: true
 };
 

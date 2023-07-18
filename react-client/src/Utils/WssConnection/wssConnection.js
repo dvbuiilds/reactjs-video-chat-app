@@ -2,6 +2,7 @@ import socketClient from 'socket.io-client';
 import store from '../../redux/store';
 import { setActiveUsers, setGroupCalls } from '../../redux/Dashboard/actions';
 import { handleAnswer, handleCandidate, handleOffer, handlePreOffer, handlePreOfferAnswer, handleUserHangedUp } from '../webRTC/webRTCHandler';
+import { checkActiveGroupCall, clearGroupData, connectToNewUser, removeInactiveStream } from '../webRTC/webRTCGroupCallHandler';
 
 
 const URL = 'http://localhost:5000';
@@ -46,13 +47,33 @@ export const connectWithWebSocketServer = ()=>{
     socket.on('user-hanged-up', ()=>{
         handleUserHangedUp();
     });
+
+    // listeners related with group calls
+    socket.on('group-call-join-request', (data)=>{
+        connectToNewUser(data);
+    });
+
+    socket.on('group-call-user-left', (data)=>{
+        removeInactiveStream(data);
+    });
 };
 
 // Emitting events related with group calls.
 
 export const registerNewGroupCall = (data)=>{
     socket.emit('group-call-register', data);
+};
 
+export const userWantsToJoinGroupCall = (data)=>{ 
+    socket.emit('group-call-join-request', data);
+};
+
+export const userLeftGroupCall = (data)=>{
+    socket.emit('group-call-user-left', data);
+};
+
+export const groupCallClosedByHost = (data)=>{
+    socket.emit('group-call-closed-by-host', data);
 };
 
 // Emitting events related with socket.
@@ -64,8 +85,15 @@ const handleBroadcastEvents = (data)=>{
             store.dispatch(setActiveUsers(activeUsers));
             break;
         case broadcastEventTypes.GROUP_CALL_ROOMS:
-            // const activeUsers = data.activeUsers.filter(activeUser=> activeUser.socketId !== socket.id);
-            store.dispatch(setGroupCalls(data.groupCallRooms));
+            const groupCallRooms = data.groupCallRooms.filter( room => room.socketId !== socket.id);
+            const activeGroupCallRoomId = checkActiveGroupCall();
+            if(activeGroupCallRoomId){
+                const room = groupCallRooms.find( room => room.roomId === activeGroupCallRoomId );
+                if(!room ){
+                    clearGroupData();
+                }
+            }
+            store.dispatch(setGroupCalls(groupCallRooms));
             break;
         default:
             break;

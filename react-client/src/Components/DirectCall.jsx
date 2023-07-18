@@ -34,7 +34,9 @@ const DirectCall = (props) => {
             <div className="col-md-7">
                 { remoteStream && callState === callStates.CALL_IN_PROGRESS && <RemoteVideoView remoteStream={remoteStream} />}
             </div>
-            <div className="row"><ConversationButtons {...props} /></div>
+            <div className="row">
+                { remoteStream && callState === 'CALL_IN_PROGRESS' && <ConversationButtons {...props} /> }
+            </div>
         </>
     );
 };

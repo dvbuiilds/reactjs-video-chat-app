@@ -56,6 +56,12 @@ io.on('connection', (socket)=>{
             event: broadcastEventTypes.ACTIVE_USERS,
             activeUsers: peers
         });
+
+        groupCallRooms = groupCallRooms.filter( room => room.socketId !== socket.id );
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.GROUP_CALL_ROOMS,
+            groupCallRooms
+        });
     });
 
     socket.on('pre-offer', (data)=>{
@@ -113,6 +119,32 @@ io.on('connection', (socket)=>{
 
         groupCallRooms.push(newGroupCallRoom);
         console.log(groupCallRooms);
+
+        io.sockets.emit('broadcast', {
+            event: broadcastEventTypes.GROUP_CALL_ROOMS,
+            groupCallRooms
+        });
+    });
+
+    socket.on('group-call-join-request', (data)=>{
+        io.to(data.roomId).emit('group-call-join-request', {
+            peerId: data.peerId,
+            streamId: data.localStreamId
+        });
+
+        socket.join(data.roomId);
+    });
+
+    socket.on('group-call-user-left', (data)=>{
+        socket.leave(data.roomId);
+
+        io.to(data.roomId).emit('group-call-user-left', {
+            streamId: data.streamId,
+        });
+    });
+
+    socket.on('group-call-closed-by-host', (data)=>{
+        groupCallRooms = groupCallRooms.filter( room => room.peerId !== data.peerId);
 
         io.sockets.emit('broadcast', {
             event: broadcastEventTypes.GROUP_CALL_ROOMS,
