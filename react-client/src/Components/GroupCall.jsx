@@ -6,7 +6,7 @@ import GroupCallRoom from './GroupCallRoom';
 import { setLocalCameraEnabled, setLocalMicrophoneEnabled } from '../redux/Call/actions';
 
 const GroupCall = (props) => {
-    const { callState, localStream, groupCallActive, groupCallStreams } = props;
+    const { callState, localStream, groupCallActive } = props;
 
     const createRoom = ()=>{
         createNewGroupCall();
