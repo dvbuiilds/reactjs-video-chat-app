@@ -15,6 +15,10 @@ export const CALL_SET_LOCAL_MICROPHONE_ENABLED = 'CALL_SET_LOCAL_MICROPHONE_ENAB
 export const CALL_SET_LOCAL_CAMERA_ENABLED = 'CALL_SET_LOCAL_CAMERA_ENABLED';
 export const CALL_SET_SCREEN_SHARING_ACTIVE = 'CALL_SET_SCREEN_SHARING_ACTIVE';
 export const CALL_RESET_CALL_DATA = 'CALL_RESET_CALL_DATA';
+export const CALL_SET_GROUP_CALL_ACTIVE  = 'CALL_SET_GROUP_CALL_ACTIVE ';
+export const CALL_SET_GROUP_CALL_STREAMS  = 'CALL_SET_GROUP_CALL_STREAMS ';
+export const CALL_CLEAR_GROUP_CALL_DATA  = 'CALL_CLEAR_GROUP_CALL_DATA ';
+export const CALL_SET_CHAT_MESSAGE  = 'CALL_SET_CHAT_MESSAGE ';
 
 export const setLocalStream = (localStream)=>{
     return {
@@ -85,5 +89,35 @@ export const setScreenSharingActive = (active)=>{
 export const resetCallDataState = ()=>{
     return {
         type: CALL_RESET_CALL_DATA
+    };
+};
+
+export const setGroupCallActive = (active) => {
+    return{
+        type: CALL_SET_GROUP_CALL_ACTIVE,
+        active
+    };
+};
+
+export const setGroupCallIncomingStreams = (groupCallStreams) => {
+    return{
+        type: CALL_SET_GROUP_CALL_STREAMS,
+        groupCallStreams
+    };
+};
+
+export const clearGroupCallData = ()=> {
+    return {
+        type: CALL_CLEAR_GROUP_CALL_DATA
+    };
+};
+
+export const setMessage = (messageReceived, messageContent) => {
+    return {
+        type: CALL_SET_CHAT_MESSAGE,
+        message: {
+            received: messageReceived,
+            content: messageContent
+        }
     };
 };

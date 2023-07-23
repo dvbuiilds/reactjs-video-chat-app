@@ -5,9 +5,10 @@ import RemoteVideoView from './RemoteVideoView';
 import CallRejectedDialog from './CallRejectedDialog';
 import IncomingCallDialog from './IncomingCallDialog';
 import CallingDialog from './CallingDialog';
-import { callStates, setCallRejected, setLocalCameraEnabled, setLocalMicrophoneEnabled } from '../redux/Call/actions';
+import { callStates, setCallRejected, setLocalCameraEnabled, setLocalMicrophoneEnabled, setMessage } from '../redux/Call/actions';
 import ConversationButtons from './ConversationButtons';
 import DashboardInfo from './DashboardInfo';
+import Messenger from './Messenger';
 
 const DirectCall = (props) => {
     const { 
@@ -19,6 +20,8 @@ const DirectCall = (props) => {
         callingDialogVisible, 
         callRejected, 
         hideCallRejectedDialog,
+        message,
+        setDirectCallMessage
     } = props;
     return (
         <>
@@ -28,13 +31,18 @@ const DirectCall = (props) => {
                 { callState === callStates.CALL_REQUESTED && <IncomingCallDialog callerUsername={callerUsername} /> }
                 { callingDialogVisible && <CallingDialog/> }
             </div>
-            <div className="col-md-5">
+            <div className="col-md-4">
                 <LocalVideoView localStream={localStream}/>
             </div>
-            <div className="col-md-7">
+            <div className="col-md-4">
                 { remoteStream && callState === callStates.CALL_IN_PROGRESS && <RemoteVideoView remoteStream={remoteStream} />}
             </div>
-            <div className="row"><ConversationButtons {...props} /></div>
+            <div className='col-md-4'>
+                { remoteStream && callState === callStates.CALL_IN_PROGRESS && <Messenger message={message} setDirectCallMessage={ setDirectCallMessage } /> }
+            </div>
+            <div className="row">
+                { remoteStream && callState === 'CALL_IN_PROGRESS' && <ConversationButtons {...props} /> }
+            </div>
         </>
     );
 };
@@ -51,6 +59,7 @@ const mapDispatchToProps = (dispatch)=> {
         hideCallRejectedDialog: (callRejectedDetails)=> dispatch(setCallRejected(callRejectedDetails)),
         setCameraEnabled: (enabled)=> dispatch(setLocalCameraEnabled(enabled)),
         setMicrophoneEnabled: (enabled)=> dispatch(setLocalMicrophoneEnabled(enabled)),
+        setDirectCallMessage: (received, content)=> dispatch(setMessage(received, content))
     };
 };
 

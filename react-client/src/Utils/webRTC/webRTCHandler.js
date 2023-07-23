@@ -1,9 +1,12 @@
-import { callStates, resetCallDataState, setCallRejected, setCallState, setCallerUsername, setCallingDialogVisible, setLocalStream, setRemoteStream, setScreenSharingActive } from "../../redux/Call/actions";
+import { callStates, resetCallDataState, setCallRejected, setCallState, setCallerUsername, setCallingDialogVisible, setLocalStream, setMessage, setRemoteStream, setScreenSharingActive } from "../../redux/Call/actions";
 import store from "../../redux/store";
 import { sendPreOffer, sendPreOfferAnswer, sendUserHangedUp, sendWebRTCAnswer, sendWebRTCCandidate, sendWebRTCOffer } from "../WssConnection/wssConnection";
 
 const defaultConstraints = {
-    video: true,
+    video: {
+        width: 480,
+        height: 360
+    },
     audio: true
 };
 
@@ -20,6 +23,8 @@ export const getLocalStream = ()=>{
 };
 
 let connectedUserSocketId = null, peerConnection = null;
+let dataChannel = null;
+
 const configuration = {
     iceServers: [{
         urls: 'stun:stun.l.google.com:13902'
@@ -38,6 +43,26 @@ export const createPeerConnection = ()=>{
         // dispatch remote stream in our store.
         store.dispatch(setRemoteStream(stream));
     };
+
+    // for incoming data channel messages.
+    peerConnection.ondatachannel = (event)=>{
+        const dataChannel = event.channel;
+
+        dataChannel.onopen = ()=>{
+            console.log('Data channel open to recieve message on peer connection.');
+        };
+
+        dataChannel.onmessage = (event)=>{
+            store.dispatch(setMessage( true, event.data ));
+        };
+    };
+
+    // for sending the messages on data channel.
+    dataChannel = peerConnection.createDataChannel('chat');
+
+    dataChannel.onopen = ()=>{
+        console.log('Data channel open for sending messages.');
+    }
 
     peerConnection.onicecandidate = (event)=> {
         console.log('getting candidates from stun server', {event});
@@ -224,4 +249,8 @@ const resetCallDataAfterHangUp = ()=>{
 export const resetCallData = ()=> {
     connectedUserSocketId = null;
     store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+};
+
+export const sendMessageUsingDataChannel = (message) => {
+    dataChannel.send(message);
 };

@@ -15,9 +15,15 @@ const RemoteVideoView = (props) => {
     }, [remoteStream]);
     return (
         <>
-            <video ref={remoteVideoRef} autoPlay muted ></video>
+            <video style={style} ref={remoteVideoRef} autoPlay muted ></video>
         </>
     );
+};
+
+const style = {
+    height: "200px",
+    width: "300px",
+    borderRadius: '15px'
 };
 
 export default RemoteVideoView;
